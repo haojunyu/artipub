@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "module": "commonJs",
+    "target": "esnext",
+    "lib": ["esnext", "DOM"],
+    "sourceMap": true,
+    "baseUrl": ".",
+    "noEmit": false,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true,
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "strict": true,
+
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "cli.js",
+    "ecosystem.config.js",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "frontend/src/setupTests.ts",
+    "tslint:latest",
+    "tslint-config-prettier"
+  ]
+}

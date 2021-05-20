@@ -1,4 +1,4 @@
-# ArtiPub
+![ArtiPub 内容创作者的搬运工,一处书写，随处可见](https://s3.ax1x.com/2021/02/19/yfhxKg.png)
 
 ![](https://img.shields.io/github/release/crawlab-team/artipub)
 ![](https://img.shields.io/github/last-commit/crawlab-team/artipub)
@@ -11,11 +11,38 @@ ArtiPub (Article Publisher 的简称，意为 "文章发布者") 是一款开源
 
 ArtiPub 目前支持文章编辑、文章发布、数据统计的功能，后期我们会加入存量文章导入、数据分析的功能，让您更好的管理、优化您的技术文章。此外，我们还会接入更多媒体渠道，真正做到让文章随处可阅。
 
+> ⚠️⚠️⚠️ **增加登录注册功能之后，mongodb表结构发生较大变化，前后不兼容，建议重命名mongodb库名以做备份，后端应用启动后会重新初始化 `artipub` 库，再迁移原来文章至新表**
+
+## 支持平台
+
+- [x] [掘金](https://juejin.cn)
+- [x] [SegmentFault](https://segmentfault.com)
+- [x] [CSDN](https://csdn.net)
+- [x] [简书](https://jianshu.com)
+- [x] [知乎](https://zhihu.com)
+- [x] [开源中国](https://oschina.net)
+- [x] [今日头条](https://toutiao.com)
+- [x] [博客园](https://cnblogs.com)
+- [ ] [微博](https://weibo.com)
+- [x] [百度百家号](https://baijiahao.baidu.com)
+- [x] [51CTO](https://blog.51cto.com)
+- [x] [开发者头条](https://toutiao.io)
+- [x] 微信公众号
+
+### git clone 备用地址
+如若github clone网络过慢，可使用如下同步更新的国内仓库。
+- https://gitee.com/tanliyuan/artipub.git
+- https://e.coding.net/tanliyuan/artipub/Artipub.git
+  
 ## 预览截图
+
+#### 登录注册
+
+![](https://z3.ax1x.com/2021/03/31/cA31BT.md.png)
 
 #### 平台管理
 
-![](http://cdn.pic.mtianyan.cn/blog_img/20200930050955.png)
+![平台管理](http://cdn.pic.mtianyan.cn/blog_img/20200930050955.png)
 
 #### 文章管理
 
@@ -43,7 +70,8 @@ ArtiPub 目前支持文章编辑、文章发布、数据统计的功能，后期
 #### NPM 或源码安装
 
 - MongoDB: 3.6+
-- NodeJS: 8.12+
+- NodeJS: 10+
+- NPM: > 5+ , < 7+
 
 ## 安装方式
 
@@ -55,18 +83,22 @@ ArtiPub 提供 3 种安装方式如下。
 
 ### 通过 Docker 安装
 
-通过 Docker，可以免去安装 MongoDB 的步骤，也是我们最推荐的安装方式。使用 Docker 安装 ArtiPub 前，请确保您安装了 Docker 以及 Docker Compose。
+通过 Docker，可以免去安装 MongoDB 的步骤，也是我们最推荐的安装方式。使用 Docker 安装 ArtiPub 前，请确保您安装了 Docker 以及 Docker Compose。docker运行 ArtiPub 有两种方式。
 
-在您的项目目录下创建 `docker-compose.yaml` 文件，输入如下内容。
+- 通过 docker-compose.yaml 启动
+  
+适用于你本地之前没有运行 `mongodb` 容器。 在您的项目目录下创建 `docker-compose.yaml` 文件，输入如下内容。
 
 ```yaml
-version: '3.3'
+version: "3.3"
 services:
   app:
-    image: "tikazyq/artipub:latest"
+    image: "tanliyuan123/artipub:1.2.0"
     environment:
       MONGO_HOST: "mongo"
-      ARTIPUB_API_ADDRESS: "http://localhost:3000" # 后端 API 地址，如果安装地址不在本机，请修改为协议 + 服务器 IP 地址 + 端口号（默认为 3000）
+      # MONGO_USERNAME: root
+      # MONGO_PASSWORD: example
+      ARTIPUB_API_ADDRESS: "http://localhost:3000" # 后端API地址，如果安装地址不在本机，请修改为协议+服务器IP地址+端口号（默认为3000）
     ports:
       - "8000:8000" # frontend
       - "3000:3000" # backend
@@ -75,11 +107,13 @@ services:
   mongo:
     image: mongo:latest
     restart: always
+    #volumes:
+    #  - "E:\\mongodb:/data/db"
     ports:
       - "27017:27017"
 ```
 
-然后在命令行中输入如下命令。
+然后在命令行中输入如下命令。如果你想再次启动容器时上次内容不会被销毁，去掉 `volumes` 两行的注释，改成自己本地路径即可。
 
 ```bash
 docker-compose up
@@ -89,33 +123,34 @@ docker-compose up
 
 注意⚠️，如果您的 Docker 宿主机不是本机，例如您用了 Docker Machine 或者 Docker 服务在其他机器上，您需要将环境变量 `ARTIPUB_API_ADDRESS` 改为宿主机 IP + 端口号（默认 3000）。然后，在浏览器输入 `http://< 宿主机 IP>:8000` 即可看到界面。
 
+  - 独立启动 artipub 镜像
+  
+  如果你本地已有启动的mongodb容器，不想用上面方式再起一个。其中 `goofy_ganguly` 为本地已启动的 mongodb 容器名, 替换成你本地的即可。
+
+  ```bash
+  docker run --rm -it --link goofy_ganguly  -p 3000:3000/tcp  -p 8000:8000/tcp  tanliyuan123/artipub:1.2.0
+  ```
+
 ### 通过 npm 包安装
 
 如果您对 npm 熟悉，且已经有 MongoDB 的环境，这是最为快捷的方式。
 
-**安装 npm 包**
+从0.1.6版本开始前后端分开打包.
 
-```bash
-npm install -g artipub
-```
+**安装 artipub-front 前端包**
+
+[artipub-front](frontend/README.md)
+
+**安装 artipub-backend 后端包**
+
+[artipub-backend](backend/README.md)
 
 安装 npm 包时，为了加速下载速度，可以加入 `--registry` 参数来设置镜像源（后面源码安装时也可以这样操作）
 
 ```bash
-npm install -g artipub --registry=https://registry.npm.taobao.org
+npm install -g artipub-frontend --registry=https://registry.npm.taobao.org
 ```
 
-**运行 ArtiPub**
-
-```bash
-artipub start
-```
-
-该命令默认会使用 `localhost:27017/artipub` 为 MongoDB 数据库链接。输入如下命令可以看更多配置，例如配置数据库等。
-
-```bash
-artipub -h
-```
 
 成功运行后，在浏览器中输入 `http://localhost:8000` 可以看到界面。
 
@@ -130,29 +165,40 @@ git clone https://github.com/crawlab-team/artipub
 **安装 npm 包**
 
 ```bash
-cd artipub
+cd artipub/frontend
+npm install
+
+cd artipub/backend
 npm install
 ```
 
 **启动前端**
 
 ```bash
-npm run start:frontend
+//frontend 目录下
+npm run dev
 ```
 
 **启动后端**
 
 ```bash
-npm run start:backend
+//backend 目录下
+npm run dev
+
+
+
+//运行prod 需先全局安装pm2
+npm i pm2 -g
+npm run prod
 ```
 
 **配置数据库**
 
-数据库的配置在 `./config.js` 中，可以按情况配置。
+数据库的配置在 `backend/src/config.ts` 中，可以按情况配置。
 
 **配置后端 API 地址**
 
-如果您部署的服务不在本机，需要在 `./src/config/config.ts` 中将 `apiEndpoint` 改成对应的 IP 地址 + 端口。
+如果您部署的服务不在本机，需要在 `frontend/src/constants.ts` 中将 `apiEndpoint` 改成对应的 IP 地址 + 端口。
 
 ## 原理
 
@@ -178,21 +224,6 @@ npm run start:backend
 
 另外，由于 ArtiPub 是开源的，JS 源码也比较易于理解，可扩展性很强，用户如果有其他平台的接入需求，完全可以更改源码来实现自己的需求，不用等待平台更新。开发组也将持续开发 ArtiPub，将其打造得更实用和易用。
 
-## 支持平台
-
-- [x] [掘金](https://juejin.cn)
-- [x] [SegmentFault](https://segmentfault.com)
-- [x] [CSDN](https://csdn.net)
-- [x] [简书](https://jianshu.com)
-- [x] [知乎](https://zhihu.com)
-- [x] [开源中国](https://oschina.net)
-- [x] [今日头条](https://toutiao.com)
-- [x] [博客园](https://cnblogs.com)
-- [ ] [微博](https://weibo.com)
-- [x] [百度百家号](https://baijiahao.baidu.com)
-- [ ] [51CTO](https://51cto.com)
-- [ ] [开发者头条](https://toutiao.io)
-- [ ] 微信公众号
 
 ## 贡献代码
 

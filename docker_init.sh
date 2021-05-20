@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 # replace original url to new one
 if [ "${ARTIPUB_API_ADDRESS}" = "" ];
@@ -14,4 +14,4 @@ nginx -s stop | true
 nginx
 
 # start backend
-npm run start:backend
+npm run prod
